@@ -6,7 +6,7 @@ export const metadata: Metadata = {
   description: "부산 동인고등학교 선생님들이 만든 웹사이트 모음",
 };
 
-// 목업과 같은 글꼴(Noto Sans KR, Do Hyeon). React 19가 <link>를 <head>로 끌어올린다.
+// 글꼴: 본문 Noto Sans KR, 제목 함렛(Hahmlet). React 19가 <link>를 <head>로 끌어올린다.
 export default function PortalLayout({ children }: { children: React.ReactNode }) {
   return (
     <>
@@ -15,7 +15,7 @@ export default function PortalLayout({ children }: { children: React.ReactNode }
       {/* eslint-disable-next-line @next/next/no-page-custom-font -- 포털 화면에서만 쓰는 글꼴 */}
       <link
         rel="stylesheet"
-        href="https://fonts.googleapis.com/css2?family=Noto+Sans+KR:wght@400;500;700;900&family=Do+Hyeon&display=swap"
+        href="https://fonts.googleapis.com/css2?family=Noto+Sans+KR:wght@400;500;700;900&family=Hahmlet:wght@700&display=swap"
         precedence="default"
       />
       {children}
