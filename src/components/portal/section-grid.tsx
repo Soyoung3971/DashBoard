@@ -1,6 +1,6 @@
 "use client";
 
-import type { CSSProperties } from "react";
+import { useState, type CSSProperties } from "react";
 import type { PortalGroup, PortalSite } from "@/lib/portal/types";
 import { SiteCard } from "./site-card";
 
@@ -11,12 +11,32 @@ type Props = {
   onAdd: (group: PortalGroup) => void;
   onEdit: (site: PortalSite) => void;
   onDelete: (site: PortalSite) => void;
+  onReorder: (group: PortalGroup, ordered: PortalSite[]) => void;
 };
 
 const TITLE: Record<PortalGroup, string> = { student: "학생용", teacher: "교사용" };
 
 // 섹션 하나(학생용/교사용): 헤더 + 카드 그리드 + (관리자 모드에서만 보이는) 추가 버튼
-export function SectionGrid({ group, sites, admin, onAdd, onEdit, onDelete }: Props) {
+// 관리자 모드에서 카드를 드래그해 다른 카드 위에 놓으면 그 자리로 이동한다.
+export function SectionGrid({ group, sites, admin, onAdd, onEdit, onDelete, onReorder }: Props) {
+  const [dragIndex, setDragIndex] = useState<number | null>(null);
+  const [overIndex, setOverIndex] = useState<number | null>(null);
+
+  function reset() {
+    setDragIndex(null);
+    setOverIndex(null);
+  }
+
+  function drop(to: number) {
+    const from = dragIndex;
+    reset();
+    if (from === null || from === to) return;
+    const next = sites.slice();
+    const [moved] = next.splice(from, 1);
+    next.splice(to, 0, moved);
+    onReorder(group, next);
+  }
+
   return (
     <section className={`sec ${group}`}>
       <div className="sec-head">
@@ -26,7 +46,20 @@ export function SectionGrid({ group, sites, admin, onAdd, onEdit, onDelete }: Pr
       </div>
       <div className="grid">
         {sites.map((site, i) => (
-          <SiteCard key={site.id} site={site} index={i} admin={admin} onEdit={onEdit} onDelete={onDelete} />
+          <SiteCard
+            key={site.id}
+            site={site}
+            index={i}
+            admin={admin}
+            dragging={dragIndex === i}
+            dragOver={overIndex === i && dragIndex !== null && dragIndex !== i}
+            onEdit={onEdit}
+            onDelete={onDelete}
+            onDragStart={setDragIndex}
+            onDragEnter={setOverIndex}
+            onDragEnd={reset}
+            onDrop={drop}
+          />
         ))}
         <button
           type="button"

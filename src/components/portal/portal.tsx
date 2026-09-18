@@ -105,6 +105,23 @@ export function Portal({ initialSites, initialAdmin, loadError }: Props) {
     if (r.sites) setSites(r.sites);
   }
 
+  // 드래그로 정한 순서를 화면에 먼저 반영하고, 서버에 저장한다. 실패하면 서버 목록으로 되돌린다.
+  async function reorder(group: PortalGroup, ordered: PortalSite[]) {
+    const before = sites;
+    setSites({ ...sites, [group]: ordered.map((s, i) => ({ ...s, sortOrder: i + 1 })) });
+    const r = await api("/api/portal/sites/reorder", {
+      method: "PUT",
+      body: JSON.stringify({ group, ids: ordered.map((s) => s.id) }),
+    });
+    if (r.error) {
+      if (r.error.includes("관리자 확인")) setAdmin(false);
+      setSites(before);
+      toast(`순서를 저장하지 못했어요 (${r.error})`);
+      return;
+    }
+    if (r.sites) setSites(r.sites);
+  }
+
   return (
     <div className={`portal${admin ? " admin" : ""}`}>
       <div className="bg">
@@ -114,8 +131,8 @@ export function Portal({ initialSites, initialAdmin, loadError }: Props) {
       </div>
       <div className="wrap">
         <Header admin={admin} onGear={onGear} onExitAdmin={exitAdmin} />
-        <SectionGrid group="student" sites={sites.student} admin={admin} onAdd={openAdd} onEdit={openEdit} onDelete={remove} />
-        <SectionGrid group="teacher" sites={sites.teacher} admin={admin} onAdd={openAdd} onEdit={openEdit} onDelete={remove} />
+        <SectionGrid group="student" sites={sites.student} admin={admin} onAdd={openAdd} onEdit={openEdit} onDelete={remove} onReorder={reorder} />
+        <SectionGrid group="teacher" sites={sites.teacher} admin={admin} onAdd={openAdd} onEdit={openEdit} onDelete={remove} onReorder={reorder} />
         <p className="foot">부산 동인고등학교 · 사이트 추가·수정은 오른쪽 위 톱니바퀴에서</p>
       </div>
 

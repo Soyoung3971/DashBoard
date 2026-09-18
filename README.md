@@ -7,31 +7,41 @@
 - 공개 화면: `/portal` (루트 `/` 는 `/portal` 로 이동)
 - 학생용 / 교사용 두 섹션, 카드 클릭 시 새 탭으로 이동
 - 아이콘은 제목 키워드로 자동 선택(16종), NEW 배지는 등록 14일 이내
-- 관리자 모드(오른쪽 위 톱니 → 비밀번호): 카드 추가 / 수정 / 삭제, 학생용↔교사용 이동
+- 관리자 모드(오른쪽 위 톱니 → 비밀번호 12116): 카드 추가 / 수정 / 삭제, 학생용↔교사용 이동, 드래그로 순서 변경
 
-## 처음 설정하는 방법
+## 처음 설정하는 방법 (처음 하는 분 기준으로 차근차근)
 
-1. **DB 만들기**: 자습·특강 사이트가 쓰는 기존 Supabase 프로젝트를 그대로 씁니다.
-   Supabase 대시보드 → SQL Editor → `supabase_portal_setup.sql` 전체를 붙여넣고 Run
-   (기존 테이블은 건드리지 않고 `portal_sites` 표 하나만 추가됩니다. 여러 번 실행해도 안전)
-2. **환경 변수**: Vercel 프로젝트 설정에 아래 세 개 등록 (`.env.example` 참고)
-   - `DATABASE_URL` : Supabase 연결 문자열 (Transaction Pooler 주소 권장) — 자습·특강 사이트와 같은 값
-   - `SESSION_SECRET` : 아무 문자열 32자 이상 — 자습·특강 사이트와 같은 값
-   - `ADMIN_PIN` : 관리자 모드 비밀번호 (8자 이상 권장)
-3. **배포**: GitHub에 push하면 Vercel이 자동 배포
-4. **운영 시작**: `/portal` → 톱니 → `ADMIN_PIN` 입력 → "+ 사이트 추가"로 카드 등록
+**1단계. Supabase 에 표 만들기** (한 번만)
+1. https://supabase.com 에 로그인 → 자습·특강 사이트가 쓰는 프로젝트를 클릭
+2. 왼쪽 메뉴에서 **SQL Editor** → **New query**
+3. 이 저장소의 `supabase_portal_setup.sql` 파일을 열어 내용 전체를 복사해 붙여넣고 **Run**
+4. 아래에 "Success" 가 나오면 끝. (기존 표는 건드리지 않고 `portal_sites` 표 하나만 생김. 두 번 실행해도 괜찮음)
 
-## 관리자 인증 (구현 지시서 4번)
+**2단계. Supabase 연결 주소 복사하기**
+1. Supabase 프로젝트 → 위쪽 **Connect** 버튼 → **Transaction pooler** 탭
+2. `postgresql://postgres.xxxx:[YOUR-PASSWORD]@…:6543/postgres` 형태의 주소를 복사
+3. `[YOUR-PASSWORD]` 자리를 DB 비밀번호로 바꿔 둔다 (자습·특강 사이트 Vercel 에 이미 넣어 둔 `DATABASE_URL` 값과 같으니 거기서 복사해도 됨)
 
-목업에는 비밀번호가 프런트엔드에 박혀 있었지만, 여기서는 **서버 라우트에서만** 대조합니다.
+**3단계. Vercel 에 배포하기**
+1. https://vercel.com → **Add New… → Project** → GitHub 의 `DashBoard` 저장소 **Import**
+2. **Environment Variables** 칸에 두 개 추가
+   - `DATABASE_URL` = 2단계에서 만든 주소
+   - `SESSION_SECRET` = 아무 글자 32자 이상 (자습·특강 사이트와 같은 값을 쓰면 관리자 로그인이 공유됨)
+3. **Deploy** → 1~2분 뒤 주소가 나옴. `https://<주소>/portal` 로 접속
 
-- `POST /api/portal/auth/login` 이 입력값을 환경변수 `ADMIN_PIN` 과 상수 시간 비교 → 맞으면
-  iron-session 쿠키(`dongin_session`)에 `portalAdmin: true` 를 기록
-- 카드 추가/수정/삭제 API(`/api/portal/sites*`)는 모두 이 세션 표시가 있어야 통과
-- 클라이언트 번들에는 비밀번호 값이 남지 않음 (`ADMIN_PIN` 은 `NEXT_PUBLIC_` 이 아니므로 서버 전용)
-- 같은 IP에서 10분에 5번 틀리면 10분 동안 잠금 (서버리스 인스턴스별 메모리 기준의 최소 장치)
-- 자습·특강 사이트의 `admin` 계정으로 로그인한 세션도 포털 관리자로 인정 (`isPortalAdmin`)
-- DB의 `portal_sites` 는 RLS 로 익명 읽기만 허용. 쓰기 정책은 두지 않아 anon 키로는 수정 불가
+**4단계. 카드 등록하기**
+1. `/portal` 접속 → 오른쪽 위 톱니 → 비밀번호 **12116** → 확인
+2. "+ 사이트 추가" 로 제목·부서·교사 이름·링크 입력 → 저장 (아이콘은 제목 보고 자동)
+3. 카드를 마우스로 끌어다 놓으면 순서가 바뀜. 연필은 수정, 휴지통은 삭제
+4. 다 했으면 왼쪽 위 노란 "관리자 모드 ✕" 를 눌러 나가기
+
+## 관리자 모드 동작
+
+- 비밀번호는 `12116` 으로 고정 (`src/lib/portal/auth-constants.ts`). 바꾸고 싶으면 그 파일의 값만 고쳐서 push
+- 비밀번호는 서버에서만 대조하므로 브라우저로 내려가는 코드에는 들어 있지 않음
+- 맞으면 8시간짜리 세션 쿠키에 관리자 표시를 남기고, 추가/수정/삭제/순서 저장 API 는 그 표시가 있어야 통과
+- 카드 순서: 관리자 모드에서 카드를 드래그해 다른 카드 위에 놓으면 그 자리로 이동하고 바로 저장됨 (PC 마우스 기준)
+- DB 의 `portal_sites` 는 RLS 로 익명 읽기만 허용. 쓰기 정책은 두지 않아 anon 키로는 수정 불가
 
 ## 기존 자습·특강 프로젝트에 합칠 때
 
@@ -40,9 +50,9 @@
 | 옮길 것 | 위치 | 비고 |
 |---|---|---|
 | 화면 | `src/app/portal/` | `layout.tsx` 가 글꼴과 `portal.css` 를 불러옴 |
-| API | `src/app/api/portal/` | 로그인/로그아웃, 목록/추가/수정/삭제 |
+| API | `src/app/api/portal/` | 로그인/로그아웃, 목록/추가/수정/삭제/순서 저장 |
 | 컴포넌트 | `src/components/portal/` | `Header` · `SectionGrid` · `SiteCard` · `AdminModal` + `portal.css` |
-| 로직 | `src/lib/portal/` | 아이콘 규칙, 검증, DB 조회 |
+| 로직 | `src/lib/portal/` | 아이콘 규칙, 검증, DB 조회, 관리자 비밀번호 |
 | 스키마 | `src/lib/db/schema.ts` 의 `portalSites` | 기존 schema.ts 에 이 테이블 정의만 추가 |
 | 세션 | `src/lib/session.ts` | 기존 파일은 그대로 두고 `SessionData` 에 `portalAdmin?: boolean` 과 `isPortalAdmin()` 만 추가 |
 | 마크 이미지 | `public/portal/mark.png` | |
@@ -56,7 +66,7 @@
 
 ```bash
 npm install
-cp .env.example .env.local   # 값 채우기
+cp .env.example .env.local   # DATABASE_URL, SESSION_SECRET 채우기
 npm run dev
 ```
 

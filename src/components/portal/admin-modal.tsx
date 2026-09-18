@@ -5,7 +5,7 @@ import type { PortalGroup, PortalSite } from "@/lib/portal/types";
 import { SiteIcon } from "./icon";
 
 /* ───────── 관리자 확인(비밀번호) 모달 ─────────
-   비밀번호는 서버(/api/portal/auth/login)에서 ADMIN_PIN 환경변수와만 대조한다.
+   비밀번호는 서버(/api/portal/auth/login)에서만 대조한다.
    열릴 때마다 폼을 새로 마운트해서 입력값·오류가 초기화되게 한다. */
 export function PasswordModal({
   open,

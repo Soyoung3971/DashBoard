@@ -8,7 +8,7 @@ import { cookies } from "next/headers";
 export type SessionData = {
   role?: "student" | "teacher" | "admin";
   name?: string;
-  // 스마트 포털 관리자 모드 (ADMIN_PIN 확인 후 true)
+  // 스마트 포털 관리자 모드 (비밀번호 확인 후 true)
   portalAdmin?: boolean;
 };
 

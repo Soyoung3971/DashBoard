@@ -99,9 +99,9 @@
 .portal .sec-head h2{font-size:16px;font-weight:900;margin:0;letter-spacing:-.01em}
 .portal .sec-head .hint{font-size:12px;color:rgba(255,255,255,.5);font-weight:500;margin-left:auto}
 @keyframes p-rise{from{opacity:0;transform:translateY(14px)}to{opacity:1;transform:none}}
-.portal .card,.portal .add{animation:p-rise .55s cubic-bezier(.2,.7,.2,1) backwards;animation-delay:calc(var(--d,0)*70ms + 1.7s)}
-.portal .sec.teacher .card,.portal .sec.teacher .add{animation-delay:calc(var(--d,0)*70ms + 2.4s)}
-@media(prefers-reduced-motion:reduce){.portal .card,.portal .add,.portal .sec-head,.portal .top::after,.portal .top h1 .w,.portal .top .lockup,.portal .top .logo,.portal .mark,.portal .orb{animation:none}}
+.portal .card{animation:p-rise .55s cubic-bezier(.2,.7,.2,1) backwards;animation-delay:calc(var(--d,0)*70ms + 1.7s)}
+.portal .sec.teacher .card{animation-delay:calc(var(--d,0)*70ms + 2.4s)}
+@media(prefers-reduced-motion:reduce){.portal .card,.portal .sec-head,.portal .top::after,.portal .top h1 .w,.portal .top .lockup,.portal .top .logo,.portal .mark,.portal .orb{animation:none}}
 .portal .sec-head .cnt{
   font-size:11.5px;font-weight:700;color:rgba(255,255,255,.62);
   background:rgba(255,255,255,.12);padding:3px 9px;border-radius:999px
@@ -166,15 +166,27 @@
 .portal .tool svg{width:14px;height:14px;stroke:var(--muted);fill:none;stroke-width:2;stroke-linecap:round;stroke-linejoin:round}
 .portal .tool:hover{background:var(--surface-alt)}
 .portal .tool.del:hover svg{stroke:var(--danger)}
-.portal.admin .card{cursor:default}
+.portal.admin .card{cursor:grab}
 .portal.admin .card:hover{transform:none;box-shadow:0 6px 18px rgba(0,0,0,.18);border-color:var(--border)}
+
+/* 드래그로 순서 바꾸기 (관리자 모드) */
+.portal.admin .card.dragging{opacity:.35;cursor:grabbing}
+.portal.admin .card.drag-over{border-color:var(--sky);box-shadow:0 0 0 3px rgba(157,192,232,.45),0 6px 18px rgba(0,0,0,.18)}
+.portal.admin .sec.teacher .card.drag-over{border-color:#E28A99;box-shadow:0 0 0 3px rgba(226,138,153,.45),0 6px 18px rgba(0,0,0,.18)}
+.portal .drag-tip{
+  display:none;position:absolute;left:50%;bottom:-13px;transform:translateX(-50%);white-space:nowrap;
+  background:#0F1F33;color:#fff;font-size:11px;font-weight:600;padding:5px 10px;border-radius:999px;
+  box-shadow:0 6px 16px rgba(0,0,0,.35);pointer-events:none;z-index:2
+}
+.portal.admin .card:hover .drag-tip{display:block}
+.portal.admin .card.dragging .drag-tip,.portal.admin .card.drag-over .drag-tip{display:none}
 
 .portal .add{
   display:none;border:2px dashed rgba(255,255,255,.34);border-radius:20px;background:rgba(255,255,255,.05);
   color:rgba(255,255,255,.82);font-family:inherit;font-size:13.5px;font-weight:700;cursor:pointer;
   min-height:150px;flex-direction:column;align-items:center;justify-content:center;gap:8px
 }
-.portal.admin .add{display:flex}
+.portal.admin .add{display:flex;animation:none}
 .portal .add span{font-size:26px;line-height:1;font-weight:400}
 .portal .add:hover{background:rgba(255,255,255,.12)}
 
