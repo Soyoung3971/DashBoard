@@ -1,0 +1,231 @@
+/* ============================================================
+   동인고 스마트 포털 — 목업(dongin-portal.html)의 CSS를 그대로 옮김.
+   자습·특강 사이트와 같은 프로젝트에 들어가므로 모든 규칙을 .portal 아래로 한정하고,
+   목업의 body.admin 은 .portal.admin 으로, :root 토큰은 .portal 에 둔다.
+   색·서체·둥근 정도·애니메이션 타이밍은 임의로 바꾸지 말 것.
+   ============================================================ */
+.portal{
+  --navy-bg:#224166;
+  --navy-deep:#1B3450;
+  --navy-primary:#27496D;
+  --navy-hover:#1E3A57;
+  --surface:#FFFFFF;
+  --surface-alt:#F1F5F9;
+  --ink:#1E293B;
+  --muted:#64748B;
+  --border:#E2E8F0;
+  --danger:#B4454B;
+  --wine:#7B2D3B;
+  --wine-soft:#F9EDEF;
+  --wine-ink:#5E1F2B;
+  --sky:#9DC0E8;
+  color-scheme:dark;
+}
+.portal *{box-sizing:border-box}
+.portal{
+  font-family:'Pretendard','Noto Sans KR',-apple-system,BlinkMacSystemFont,'Apple SD Gothic Neo','Malgun Gothic',sans-serif;
+  color:#fff;-webkit-font-smoothing:antialiased;
+  background:var(--navy-bg);
+  min-height:100vh;overflow-x:hidden;position:relative;
+  margin:0;padding:0;
+  line-height:normal; /* Tailwind preflight(1.5) 대신 목업이 쓴 브라우저 기본값 */
+}
+.portal .bg{position:fixed;inset:0;z-index:0;pointer-events:none;overflow:hidden;background:var(--navy-bg)}
+.portal .bg::before{
+  content:"";position:absolute;inset:0;
+  background-image:linear-gradient(rgba(255,255,255,.045) 1px,transparent 1px),linear-gradient(90deg,rgba(255,255,255,.045) 1px,transparent 1px);
+  background-size:36px 36px;
+  mask-image:radial-gradient(ellipse 80% 60% at 50% 0%,#000 30%,transparent 100%);
+  -webkit-mask-image:radial-gradient(ellipse 80% 60% at 50% 0%,#000 30%,transparent 100%);
+}
+.portal .orb{position:absolute;border-radius:50%;filter:blur(70px);opacity:.55;animation:p-drift 22s ease-in-out infinite alternate}
+.portal .orb.a{width:520px;height:520px;left:-160px;top:-200px;background:#3B6A9E}
+.portal .orb.b{width:420px;height:420px;right:-140px;top:120px;background:#5E2B3D;animation-duration:28s;animation-delay:-8s}
+.portal .orb.c{width:360px;height:360px;left:35%;bottom:-220px;background:#2E5A86;animation-duration:26s;animation-delay:-14s}
+@keyframes p-drift{from{transform:translate(0,0) scale(1)}to{transform:translate(70px,50px) scale(1.12)}}
+.portal .wrap{position:relative;z-index:1;max-width:1080px;margin:0 auto;padding:22px 16px 60px}
+
+/* ── 헤더 ── */
+.portal .top{display:flex;flex-direction:column;align-items:center;text-align:center;gap:10px;margin-bottom:34px;padding:8px 0 24px;position:relative}
+.portal .top .gear{position:absolute;top:0;right:0}
+.portal .top .logo{position:absolute;top:0;left:0}
+.portal .top .admin-chip{position:absolute;top:56px;left:0}
+.portal .top .lockup{margin-top:52px;display:flex;align-items:center;justify-content:center;gap:12px}
+.portal .mark{height:34px;width:auto;flex:none;animation:p-word .8s cubic-bezier(.2,.7,.2,1) backwards;animation-delay:.05s}
+@media(min-width:640px){.portal .mark{height:42px}}
+@media(min-width:640px){.portal .top .lockup{margin-top:10px}.portal .top .admin-chip{top:0;left:66px}}
+.portal .top::after{
+  content:"";position:absolute;left:0;bottom:0;height:1px;width:100%;
+  background:linear-gradient(90deg,transparent,var(--sky) 30%,#E28A99 70%,transparent);
+  transform-origin:center;animation:p-draw .9s cubic-bezier(.2,.7,.2,1) .15s both
+}
+@keyframes p-draw{from{transform:scaleX(0)}to{transform:scaleX(1)}}
+.portal .top .logo{animation:p-rise .7s cubic-bezier(.2,.7,.2,1) both}
+.portal .logo{
+  width:44px;height:44px;flex:none;border-radius:13px;background:rgba(255,255,255,.12);
+  display:grid;place-items:center;border:1px solid rgba(255,255,255,.18);cursor:pointer
+}
+.portal .logo svg{width:24px;height:24px;stroke:#fff}
+.portal .logo{background:linear-gradient(145deg,rgba(255,255,255,.2),rgba(255,255,255,.06));box-shadow:inset 0 1px 0 rgba(255,255,255,.25)}
+@media(min-width:640px){.portal .logo{width:54px;height:54px;border-radius:16px}.portal .logo svg{width:28px;height:28px}}
+.portal .top h1{
+  font-family:'Do Hyeon','Noto Sans KR',sans-serif;
+  font-size:29px;font-weight:400;margin:0;letter-spacing:.07em;line-height:1.25;
+  text-indent:.06em;position:relative;display:inline-block
+}
+@media(min-width:640px){.portal .top h1{font-size:37px}}
+.portal .top h1 .w{display:inline-block;animation:p-word .8s cubic-bezier(.2,.7,.2,1) backwards}
+.portal .top h1 .w:nth-child(1){animation-delay:.15s}
+.portal .top h1 .w:nth-child(2){animation-delay:.3s}
+@keyframes p-word{from{opacity:0;transform:translateY(18px);filter:blur(6px)}to{opacity:1;transform:none;filter:none}}
+.portal .gear{
+  width:40px;height:40px;border-radius:12px;border:1px solid rgba(255,255,255,.2);
+  background:rgba(255,255,255,.08);display:grid;place-items:center;cursor:pointer;flex:none;padding:0
+}
+.portal .gear svg{width:19px;height:19px;stroke:#fff}
+.portal .gear:hover{background:rgba(255,255,255,.17)}
+.portal .admin-chip{
+  display:none;align-items:center;gap:6px;background:#F5C451;color:#3A2B06;border:0;
+  font-family:inherit;font-size:12px;font-weight:900;padding:7px 12px;border-radius:999px;cursor:pointer;flex:none
+}
+.portal.admin .admin-chip{display:inline-flex}
+
+/* ── 섹션 ── */
+.portal .sec{margin-bottom:30px}
+.portal .sec-head{display:flex;align-items:center;gap:9px;margin:0 2px 13px;animation:p-rise .6s cubic-bezier(.2,.7,.2,1) backwards}
+.portal .sec.student .sec-head{animation-delay:1.5s}
+.portal .sec.teacher .sec-head{animation-delay:2.2s}
+.portal .bar{width:4px;height:17px;border-radius:2px;background:#9DC0E8}
+.portal .sec-head h2{font-size:16px;font-weight:900;margin:0;letter-spacing:-.01em}
+.portal .sec-head .hint{font-size:12px;color:rgba(255,255,255,.5);font-weight:500;margin-left:auto}
+@keyframes p-rise{from{opacity:0;transform:translateY(14px)}to{opacity:1;transform:none}}
+.portal .card,.portal .add{animation:p-rise .55s cubic-bezier(.2,.7,.2,1) backwards;animation-delay:calc(var(--d,0)*70ms + 1.7s)}
+.portal .sec.teacher .card,.portal .sec.teacher .add{animation-delay:calc(var(--d,0)*70ms + 2.4s)}
+@media(prefers-reduced-motion:reduce){.portal .card,.portal .add,.portal .sec-head,.portal .top::after,.portal .top h1 .w,.portal .top .lockup,.portal .top .logo,.portal .mark,.portal .orb{animation:none}}
+.portal .sec-head .cnt{
+  font-size:11.5px;font-weight:700;color:rgba(255,255,255,.62);
+  background:rgba(255,255,255,.12);padding:3px 9px;border-radius:999px
+}
+.portal .sec.teacher .bar{background:#E28A99}
+
+/* ── 카드 그리드 ── */
+.portal .grid{display:grid;grid-template-columns:repeat(2,1fr);gap:12px}
+@media(min-width:640px){.portal .grid{grid-template-columns:repeat(3,1fr);gap:14px}}
+@media(min-width:900px){.portal .grid{grid-template-columns:repeat(4,1fr)}}
+
+.portal .card{
+  position:relative;background:var(--surface);border-radius:20px;padding:20px 16px 17px;
+  text-align:center;text-decoration:none;color:inherit;display:block;
+  box-shadow:0 6px 18px rgba(0,0,0,.18);border:2px solid transparent;
+  transition:transform .16s ease, box-shadow .16s ease, border-color .16s ease;
+}
+.portal .card::before{
+  content:"";position:absolute;inset:0;border-radius:18px;pointer-events:none;
+  background:linear-gradient(180deg,rgba(39,73,109,.05),transparent 45%)
+}
+.portal .card:hover{transform:translateY(-4px);box-shadow:0 16px 32px rgba(0,0,0,.28);border-color:var(--navy-primary)}
+.portal .card:hover .ic{transform:translateY(-3px) rotate(-4deg);box-shadow:0 8px 16px rgba(39,73,109,.18)}
+.portal .sec.teacher .card:hover .ic{box-shadow:0 8px 16px rgba(123,45,59,.2)}
+.portal .card:focus-visible{outline:3px solid var(--sky);outline-offset:3px}
+.portal .ic{transition:transform .22s cubic-bezier(.2,.7,.2,1),box-shadow .22s}
+.portal .card:active{transform:translateY(-1px)}
+.portal .ic{
+  width:56px;height:56px;margin:0 auto 13px;border-radius:18px;
+  background:var(--surface-alt);display:grid;place-items:center;
+  box-shadow:inset 0 0 0 1px rgba(39,73,109,.06)
+}
+.portal .ic svg{width:26px;height:26px;stroke:var(--navy-primary);fill:none;stroke-width:1.8;stroke-linecap:round;stroke-linejoin:round}
+.portal .sec.teacher .ic{background:var(--wine-soft)}
+.portal .sec.teacher .ic svg{stroke:var(--wine)}
+.portal .num{
+  position:absolute;top:10px;left:10px;min-width:24px;height:24px;padding:0 7px;border-radius:8px;
+  background:var(--navy-primary);color:#fff;font-size:11.5px;font-weight:900;
+  display:grid;place-items:center;font-variant-numeric:tabular-nums;letter-spacing:.02em;
+  box-shadow:0 2px 6px rgba(39,73,109,.35)
+}
+.portal .sec.teacher .num{background:var(--wine);box-shadow:0 2px 6px rgba(123,45,59,.35)}
+.portal .sec.teacher .card:hover{border-color:var(--wine)}
+.portal .new{
+  position:absolute;top:10px;right:10px;padding:3px 8px;border-radius:999px;
+  background:#E8503A;color:#fff;font-size:10px;font-weight:900;letter-spacing:.08em;
+  box-shadow:0 2px 6px rgba(232,80,58,.4);animation:p-pop 1.6s ease-in-out infinite
+}
+@keyframes p-pop{0%,100%{transform:scale(1)}50%{transform:scale(1.08)}}
+@media(prefers-reduced-motion:reduce){.portal .new{animation:none}}
+.portal.admin .new{display:none}
+.portal .card .t{font-size:16.5px;font-weight:700;color:var(--ink);line-height:1.35;letter-spacing:-.02em;word-break:keep-all}
+.portal .card .s{margin-top:7px;font-size:12px;color:var(--muted);font-weight:500;line-height:1.4;word-break:keep-all}
+
+/* 관리자 버튼 */
+.portal .tools{display:none;position:absolute;top:8px;right:8px;gap:5px}
+.portal.admin .tools{display:flex}
+.portal .tool{
+  width:27px;height:27px;border-radius:9px;border:1px solid var(--border);background:#fff;
+  display:grid;place-items:center;cursor:pointer;padding:0
+}
+.portal .tool svg{width:14px;height:14px;stroke:var(--muted);fill:none;stroke-width:2;stroke-linecap:round;stroke-linejoin:round}
+.portal .tool:hover{background:var(--surface-alt)}
+.portal .tool.del:hover svg{stroke:var(--danger)}
+.portal.admin .card{cursor:default}
+.portal.admin .card:hover{transform:none;box-shadow:0 6px 18px rgba(0,0,0,.18);border-color:var(--border)}
+
+.portal .add{
+  display:none;border:2px dashed rgba(255,255,255,.34);border-radius:20px;background:rgba(255,255,255,.05);
+  color:rgba(255,255,255,.82);font-family:inherit;font-size:13.5px;font-weight:700;cursor:pointer;
+  min-height:150px;flex-direction:column;align-items:center;justify-content:center;gap:8px
+}
+.portal.admin .add{display:flex}
+.portal .add span{font-size:26px;line-height:1;font-weight:400}
+.portal .add:hover{background:rgba(255,255,255,.12)}
+
+/* ── 모달 ── */
+.portal .ov{
+  position:fixed;inset:0;background:rgba(10,20,34,.66);backdrop-filter:blur(3px);
+  display:none;align-items:center;justify-content:center;padding:16px;z-index:50
+}
+.portal .ov.on{display:flex}
+.portal .modal{
+  background:#fff;color:var(--ink);border-radius:24px;padding:26px 22px 22px;
+  width:100%;max-width:400px;max-height:88vh;overflow-y:auto;box-shadow:0 22px 50px rgba(0,0,0,.4);
+  color-scheme:light
+}
+.portal .modal h3{margin:0 0 4px;font-size:18px;font-weight:900;letter-spacing:-.02em}
+.portal .modal .desc{margin:0 0 18px;font-size:12.5px;color:var(--muted);line-height:1.5}
+.portal label{display:block;font-size:12.5px;font-weight:700;color:var(--ink);margin:14px 0 6px}
+.portal input[type=text],.portal input[type=password],.portal input[type=url]{
+  width:100%;padding:11px 13px;border:1px solid var(--border);border-radius:10px;
+  font-family:inherit;font-size:14.5px;color:var(--ink);background:#fff
+}
+.portal input::placeholder{color:#94A3B8}
+.portal input:focus{outline:2px solid var(--navy-primary);outline-offset:-1px;border-color:transparent}
+.portal .seg{display:flex;gap:8px}
+.portal .seg button{
+  flex:1;padding:11px;border-radius:10px;border:1px solid var(--border);background:#fff;
+  font-family:inherit;font-size:13.5px;font-weight:700;color:var(--muted);cursor:pointer
+}
+.portal .seg button.on{background:var(--navy-primary);border-color:var(--navy-primary);color:#fff}
+.portal .prev{
+  margin-top:16px;background:var(--surface-alt);border-radius:14px;padding:13px;
+  display:flex;align-items:center;gap:11px
+}
+.portal .prev .ic{width:42px;height:42px;margin:0;border-radius:13px;background:#fff}
+.portal .prev .ic svg{width:21px;height:21px}
+.portal .prev .pt{font-size:13.5px;font-weight:700;color:var(--ink)}
+.portal .prev .ps{font-size:11.5px;color:var(--muted);margin-top:3px}
+.portal .acts{display:flex;gap:9px;margin-top:22px}
+.portal .acts button{
+  flex:1;padding:12px;border-radius:10px;font-family:inherit;font-size:14px;font-weight:700;cursor:pointer;border:1px solid var(--border)
+}
+.portal .acts .ghost{background:#fff;color:var(--navy-primary)}
+.portal .acts .primary{background:var(--navy-primary);border-color:var(--navy-primary);color:#fff}
+.portal .acts .primary:hover{background:var(--navy-hover)}
+.portal .acts button:disabled{opacity:.6;cursor:default}
+.portal .err{color:var(--danger);font-size:12.5px;font-weight:700;margin-top:10px;min-height:16px}
+
+.portal .toast{
+  position:fixed;left:50%;bottom:24px;transform:translate(-50%,16px);opacity:0;pointer-events:none;
+  background:#0F1F33;color:#fff;font-size:13px;font-weight:600;padding:11px 18px;border-radius:999px;
+  box-shadow:0 10px 26px rgba(0,0,0,.4);transition:.22s ease;z-index:60;max-width:88vw;text-align:center
+}
+.portal .toast.on{opacity:1;transform:translate(-50%,0)}
+.portal .foot{margin-top:34px;text-align:center;font-size:11.5px;color:rgba(255,255,255,.4);line-height:1.6}

@@ -1,0 +1,130 @@
+"use client";
+
+import { useCallback, useEffect, useRef, useState } from "react";
+import type { PortalGroup, PortalSite, PortalSitesByGroup } from "@/lib/portal/types";
+import { Header } from "./header";
+import { SectionGrid } from "./section-grid";
+import { EditModal, PasswordModal, type EditTarget, type SiteFormValues } from "./admin-modal";
+
+type Props = {
+  initialSites: PortalSitesByGroup;
+  initialAdmin: boolean; // 세션 쿠키에 관리자 표시가 있으면 새로고침해도 관리자 모드 유지
+  loadError: string | null;
+};
+
+type ApiResult = { ok?: boolean; error?: string; sites?: PortalSitesByGroup };
+
+async function api(path: string, init?: RequestInit): Promise<ApiResult> {
+  try {
+    const res = await fetch(path, {
+      ...init,
+      headers: { "content-type": "application/json", ...(init?.headers ?? {}) },
+    });
+    const data = (await res.json().catch(() => ({}))) as ApiResult;
+    if (!res.ok) return { error: data.error ?? `요청 실패 (${res.status})` };
+    return data;
+  } catch {
+    return { error: "네트워크 오류" };
+  }
+}
+
+export function Portal({ initialSites, initialAdmin, loadError }: Props) {
+  const [sites, setSites] = useState<PortalSitesByGroup>(initialSites);
+  const [admin, setAdmin] = useState(initialAdmin);
+  const [pwOpen, setPwOpen] = useState(false);
+  const [editTarget, setEditTarget] = useState<EditTarget | null>(null);
+
+  // ── 토스트 ── (서버에서 목록을 못 읽었으면 첫 화면부터 토스트를 띄운 채로 시작)
+  const [toastMsg, setToastMsg] = useState(loadError ? `목록을 불러오지 못했어요 (${loadError})` : "");
+  const [toastOn, setToastOn] = useState(Boolean(loadError));
+  const toastTimer = useRef<ReturnType<typeof setTimeout> | null>(null);
+  const toast = useCallback((m: string) => {
+    setToastMsg(m);
+    setToastOn(true);
+    if (toastTimer.current) clearTimeout(toastTimer.current);
+    toastTimer.current = setTimeout(() => setToastOn(false), 2600);
+  }, []);
+  useEffect(() => {
+    if (!loadError) return;
+    const h = setTimeout(() => setToastOn(false), 2600);
+    return () => clearTimeout(h);
+  }, [loadError]);
+
+  // ── 관리자 진입/종료 ──
+  function onGear() {
+    if (admin) {
+      exitAdmin();
+      return;
+    }
+    setPwOpen(true);
+  }
+
+  async function exitAdmin() {
+    setAdmin(false);
+    await api("/api/portal/auth/logout", { method: "POST" });
+  }
+
+  async function tryPw(password: string): Promise<string | null> {
+    const r = await api("/api/portal/auth/login", { method: "POST", body: JSON.stringify({ password }) });
+    if (r.error) return r.error;
+    setAdmin(true);
+    setPwOpen(false);
+    toast("관리자 모드입니다. 카드를 수정·삭제할 수 있어요.");
+    return null;
+  }
+
+  // ── 추가 / 수정 / 삭제 ──
+  function openAdd(group: PortalGroup) {
+    setEditTarget({ group, site: null });
+  }
+  function openEdit(site: PortalSite) {
+    setEditTarget({ group: site.group, site });
+  }
+
+  async function save(values: SiteFormValues, editing: PortalSite | null): Promise<string | null> {
+    const r = editing
+      ? await api(`/api/portal/sites/${editing.id}`, { method: "PATCH", body: JSON.stringify(values) })
+      : await api("/api/portal/sites", { method: "POST", body: JSON.stringify(values) });
+    if (r.error) {
+      if (r.error.includes("관리자 확인")) setAdmin(false);
+      return r.error;
+    }
+    if (r.sites) setSites(r.sites);
+    setEditTarget(null);
+    return null;
+  }
+
+  async function remove(site: PortalSite) {
+    if (!window.confirm(`「${site.title}」을(를) 삭제할까요?`)) return;
+    const r = await api(`/api/portal/sites/${site.id}`, { method: "DELETE" });
+    if (r.error) {
+      if (r.error.includes("관리자 확인")) setAdmin(false);
+      toast(`저장하지 못했어요 (${r.error})`);
+      return;
+    }
+    if (r.sites) setSites(r.sites);
+  }
+
+  return (
+    <div className={`portal${admin ? " admin" : ""}`}>
+      <div className="bg">
+        <div className="orb a" />
+        <div className="orb b" />
+        <div className="orb c" />
+      </div>
+      <div className="wrap">
+        <Header admin={admin} onGear={onGear} onExitAdmin={exitAdmin} />
+        <SectionGrid group="student" sites={sites.student} admin={admin} onAdd={openAdd} onEdit={openEdit} onDelete={remove} />
+        <SectionGrid group="teacher" sites={sites.teacher} admin={admin} onAdd={openAdd} onEdit={openEdit} onDelete={remove} />
+        <p className="foot">부산 동인고등학교 · 사이트 추가·수정은 오른쪽 위 톱니바퀴에서</p>
+      </div>
+
+      <PasswordModal open={pwOpen} onClose={() => setPwOpen(false)} onSubmit={tryPw} />
+      <EditModal target={editTarget} onClose={() => setEditTarget(null)} onSave={save} />
+
+      <div className={`toast${toastOn ? " on" : ""}`} role="status" aria-live="polite">
+        {toastMsg}
+      </div>
+    </div>
+  );
+}

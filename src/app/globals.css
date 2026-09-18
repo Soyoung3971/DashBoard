@@ -1,0 +1,14 @@
+@import "tailwindcss";
+
+/* 자습·특강 사이트와 같은 프로젝트에 넣을 때는 이 파일 대신 기존 globals.css 를 그대로 쓰면 된다.
+   포털 화면의 스타일은 전부 src/components/portal/portal.css 안에서 .portal 아래로 한정되어 있다. */
+* {
+  box-sizing: border-box;
+}
+
+html,
+body {
+  margin: 0;
+  padding: 0;
+  min-height: 100%;
+}
