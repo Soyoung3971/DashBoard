@@ -18,6 +18,7 @@ export function Header({ admin, onGear, onExitAdmin }: Props) {
         title="홈"
         onClick={(e) => {
           e.preventDefault();
+          if (admin) onExitAdmin(); // 홈을 누르면 관리자 모드를 끄고 보기 전용으로 되돌린다
           window.scrollTo({ top: 0, behavior: "smooth" });
         }}
       >
