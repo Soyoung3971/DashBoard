@@ -11,15 +11,20 @@ export function PasswordModal({
   open,
   onClose,
   onSubmit,
+  title = "관리자 확인",
+  desc = "사이트를 추가·수정·삭제하려면 관리자 비밀번호를 입력하세요.",
 }: {
   open: boolean;
   onClose: () => void;
   onSubmit: (password: string) => Promise<string | null>; // 실패 시 오류 문구
+  title?: string;
+  desc?: string;
 }) {
   if (!open) return null;
   return (
     <div className="ov on" onClick={(e) => e.target === e.currentTarget && onClose()}>
-      <PasswordForm onClose={onClose} onSubmit={onSubmit} />
+      {/* key 로 열 때마다 폼을 새로 마운트 → 입력값·오류가 초기화된다 */}
+      <PasswordForm key={title} onClose={onClose} onSubmit={onSubmit} title={title} desc={desc} />
     </div>
   );
 }
@@ -27,9 +32,13 @@ export function PasswordModal({
 function PasswordForm({
   onClose,
   onSubmit,
+  title,
+  desc,
 }: {
   onClose: () => void;
   onSubmit: (password: string) => Promise<string | null>;
+  title: string;
+  desc: string;
 }) {
   const [pw, setPw] = useState("");
   const [err, setErr] = useState("");
@@ -45,8 +54,8 @@ function PasswordForm({
 
   return (
     <div className="modal" role="dialog" aria-modal="true" aria-labelledby="pwTitle">
-      <h3 id="pwTitle">관리자 확인</h3>
-      <p className="desc">사이트를 추가·수정·삭제하려면 관리자 비밀번호를 입력하세요.</p>
+      <h3 id="pwTitle">{title}</h3>
+      <p className="desc">{desc}</p>
       <label htmlFor="pw">비밀번호</label>
       <input
         type="password"

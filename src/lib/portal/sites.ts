@@ -21,6 +21,11 @@ export async function listSites(): Promise<PortalSitesByGroup> {
   return groupSites(rows.map(toSite));
 }
 
+// 교사용 카드의 실제 URL을 감춘다(잠금 상태). 화면 소스·API 응답 어디에도 주소가 나가지 않게 한다.
+export function hideTeacherUrls(sites: PortalSitesByGroup): PortalSitesByGroup {
+  return { student: sites.student, teacher: sites.teacher.map((s) => ({ ...s, url: "" })) };
+}
+
 // 그룹 맨 뒤에 붙일 때 쓰는 다음 sort_order (목업의 push 와 같은 동작)
 export async function nextSortOrder(group: PortalGroup): Promise<number> {
   const [row] = await db

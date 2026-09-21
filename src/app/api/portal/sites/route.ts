@@ -1,15 +1,18 @@
 import { NextResponse } from "next/server";
 import { db, portalSites } from "@/lib/db";
+import { getSession, isPortalTeacher } from "@/lib/session";
 import { requirePortalAdmin } from "@/lib/portal/admin";
-import { dbErrorMessage, listSites, nextSortOrder, toSite } from "@/lib/portal/sites";
+import { dbErrorMessage, hideTeacherUrls, listSites, nextSortOrder, toSite } from "@/lib/portal/sites";
 import { siteInputSchema } from "@/lib/portal/validators";
 
 export const dynamic = "force-dynamic";
 
-// 목록 (누구나)
+// 목록 (누구나) — 단, 교사용 URL은 교사 열람 권한이 있을 때만 내려준다.
 export async function GET() {
   try {
-    return NextResponse.json({ sites: await listSites() });
+    const session = await getSession();
+    const sites = await listSites();
+    return NextResponse.json({ sites: isPortalTeacher(session) ? sites : hideTeacherUrls(sites) });
   } catch (e) {
     return NextResponse.json({ error: dbErrorMessage(e) }, { status: 500 });
   }

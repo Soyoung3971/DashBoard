@@ -10,6 +10,8 @@ export type SessionData = {
   name?: string;
   // 스마트 포털 관리자 모드 (비밀번호 확인 후 true)
   portalAdmin?: boolean;
+  // 스마트 포털 교사용 카드 열람 (비밀번호 확인 후 true) — 편집 권한은 없음
+  portalTeacher?: boolean;
 };
 
 const password =
@@ -36,4 +38,9 @@ export async function getSession(): Promise<IronSession<SessionData>> {
 // 포털 관리자 여부 — PIN으로 들어왔거나, 기존 사이트의 admin 계정으로 로그인한 경우
 export function isPortalAdmin(session: SessionData): boolean {
   return session.portalAdmin === true || session.role === "admin";
+}
+
+// 교사용 카드를 열람할 수 있는지 — 교사 비밀번호를 확인했거나, 관리자면 당연히 가능
+export function isPortalTeacher(session: SessionData): boolean {
+  return session.portalTeacher === true || isPortalAdmin(session);
 }

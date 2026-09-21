@@ -8,10 +8,12 @@ type Props = {
   site: PortalSite;
   index: number; // 그룹 안 순서 (0부터) — 번호 배지는 index+1
   admin: boolean;
+  teacherUnlocked: boolean; // 교사용 카드를 열람할 수 있는지
   dragging: boolean; // 지금 끌고 있는 카드
   dragOver: boolean; // 끌고 있는 카드를 올려놓은 자리
   onEdit: (site: PortalSite) => void;
   onDelete: (site: PortalSite) => void;
+  onLockedClick: (site: PortalSite) => void; // 잠긴 교사용 카드를 눌렀을 때 (비밀번호 요청)
   onDragStart: (index: number) => void;
   onDragEnter: (index: number) => void;
   onDragEnd: () => void;
@@ -24,17 +26,23 @@ export function SiteCard({
   site,
   index,
   admin,
+  teacherUnlocked,
   dragging,
   dragOver,
   onEdit,
   onDelete,
+  onLockedClick,
   onDragStart,
   onDragEnter,
   onDragEnd,
   onDrop,
 }: Props) {
   const sub = [site.dept, site.teacher && `교사 ${site.teacher}`].filter(Boolean).join(" · ");
-  const cls = ["card", dragging && "dragging", dragOver && "drag-over"].filter(Boolean).join(" ");
+  // 교사용 카드는 비밀번호 열람 전까지 잠긴다(관리자는 예외). 잠금 상태에선 URL도 비어 있다.
+  const locked = site.group === "teacher" && !admin && !teacherUnlocked;
+  const cls = ["card", locked && "locked", dragging && "dragging", dragOver && "drag-over"]
+    .filter(Boolean)
+    .join(" ");
 
   function handleDragStart(e: DragEvent<HTMLAnchorElement>) {
     if (!admin) return;
@@ -52,7 +60,14 @@ export function SiteCard({
       rel="noopener"
       draggable={admin}
       onClick={(e) => {
-        if (admin) e.preventDefault();
+        if (admin) {
+          e.preventDefault();
+          return;
+        }
+        if (locked) {
+          e.preventDefault(); // 링크로 이동하지 않고 비밀번호부터 받는다
+          onLockedClick(site);
+        }
       }}
       onDragStart={handleDragStart}
       onDragEnter={(e) => {
@@ -106,7 +121,16 @@ export function SiteCard({
         </button>
       </div>
       <span className="num">{index + 1}</span>
-      {isNewSite(site) && <span className="new">NEW</span>}
+      {locked ? (
+        <span className="lock" title="비밀번호가 필요합니다" aria-label="비밀번호가 필요합니다">
+          <svg viewBox="0 0 24 24">
+            <rect x="5" y="11" width="14" height="9" rx="2" />
+            <path d="M8 11V8a4 4 0 0 1 8 0v3" />
+          </svg>
+        </span>
+      ) : (
+        isNewSite(site) && <span className="new">NEW</span>
+      )}
       <SiteIcon title={site.title} />
       <div className="t">{site.title}</div>
       <div className="s">{sub}</div>
