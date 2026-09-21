@@ -53,7 +53,7 @@
 .portal .top .lockup{margin-top:52px;display:flex;align-items:center;justify-content:center;gap:12px}
 .portal .mark{height:34px;width:auto;flex:none;animation:p-word .8s cubic-bezier(.2,.7,.2,1) backwards;animation-delay:.05s}
 @media(min-width:640px){.portal .mark{height:42px}}
-@media(min-width:640px){.portal .top .lockup{margin-top:10px}.portal .top .admin-chip{top:0;left:66px}}
+@media(min-width:640px){.portal .top .lockup{margin-top:-8px;min-height:54px}.portal .top .admin-chip{top:0;left:66px}}
 .portal .top::after{
   content:"";position:absolute;left:0;bottom:0;height:1px;width:100%;
   background:linear-gradient(90deg,transparent,var(--sky) 30%,#E28A99 70%,transparent);
