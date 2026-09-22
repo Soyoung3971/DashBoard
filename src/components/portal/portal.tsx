@@ -164,7 +164,12 @@ export function Portal({ initialSites, initialAdmin, initialTeacherUnlocked, loa
         <Header admin={admin} onGear={onGear} onExitAdmin={exitAdmin} />
         <SectionGrid group="student" sites={sites.student} admin={admin} teacherUnlocked={teacherUnlocked} onAdd={openAdd} onEdit={openEdit} onDelete={remove} onLockedClick={requestTeacher} onReorder={reorder} />
         <SectionGrid group="teacher" sites={sites.teacher} admin={admin} teacherUnlocked={teacherUnlocked} onAdd={openAdd} onEdit={openEdit} onDelete={remove} onLockedClick={requestTeacher} onReorder={reorder} />
-        <p className="foot">부산 동인고등학교 · 사이트 추가·수정은 오른쪽 위 톱니바퀴에서</p>
+        <p className="foot">
+          부산 동인고등학교 ·{" "}
+          <a href="https://www.dongin.hs.kr" target="_blank" rel="noopener noreferrer">
+            www.dongin.hs.kr
+          </a>
+        </p>
       </div>
 
       <PasswordModal open={pwOpen} onClose={() => setPwOpen(false)} onSubmit={tryPw} />
